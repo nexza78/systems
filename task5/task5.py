@@ -1,14 +1,9 @@
 import json
-from itertools import chain
 import numpy as np
 import pandas as pd
 def task(s1, s2):
     s1 = json.loads(s1)
     s2 = json.loads(s2)
-    add = chain(*s1)
-    print(s1, s2)
-    groups_ranks = dict(enumerate(s1))
-    groups_ranks = dict(enumerate(s2))
     obj1 = []
     obj2 = []
     s1_new = []
@@ -30,7 +25,6 @@ def task(s1, s2):
             obj2.append(i)
             s2_new.append([i])
 
-    print(obj1, obj2)
     A = np.zeros((len(obj1), len(obj1)))
     A = A.astype(int)
     B = np.zeros((len(obj2), len(obj2)))
@@ -53,10 +47,6 @@ def task(s1, s2):
     At = A.transpose()
     Bt = B.transpose()
     mul = A.mul(B, 1)
-    print(A)
-    print(B)
-    print(At)
-    print(Bt)
     mul_t = At.mul(Bt, 1)
     res = []
     for i in obj1:
