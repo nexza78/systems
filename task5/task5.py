@@ -1,69 +1,70 @@
-from io import StringIO
-import csv
+import json
+from itertools import chain
 import numpy as np
+import pandas as pd
+def task(s1, s2):
+    s1 = json.loads(s1)
+    s2 = json.loads(s2)
+    add = chain(*s1)
+    print(s1, s2)
+    groups_ranks = dict(enumerate(s1))
+    groups_ranks = dict(enumerate(s2))
+    obj1 = []
+    obj2 = []
+    s1_new = []
+    s2_new = []
+    for i in s1:
+        if type(i) == list:
+            for j in i:
+                obj1.append(j)
+            s1_new.append(i)
+        else:
+            obj1.append(i)
+            s1_new.append([i])
+    for i in s2:
+        if type(i) == list:
+            for j in i:
+                obj2.append(j)
+            s2_new.append(i)
+        else:
+            obj2.append(i)
+            s2_new.append([i])
 
+    print(obj1, obj2)
+    A = np.zeros((len(obj1), len(obj1)))
+    A = A.astype(int)
+    B = np.zeros((len(obj2), len(obj2)))
+    B = B.astype(int)
+    A = pd.DataFrame(A, columns=obj1, index=obj1)
+    B = pd.DataFrame(B, columns=obj1, index=obj1)
 
-def task1(csvString):
-    num_types = 5
-
-    f = StringIO(csvString)
-    reader = csv.reader(f, delimiter=',')
+    prev = []
+    for i in s1_new:
+        prev.extend(i)
+        for k in i:
+            for j in prev:
+                A.loc[j][k] = 1
+    prev = []
+    for i in s2_new:
+        prev.extend(i)
+        for k in i:
+            for j in prev:
+                B.loc[j][k] = 1
+    At = A.transpose()
+    Bt = B.transpose()
+    mul = A.mul(B, 1)
+    print(A)
+    print(B)
+    print(At)
+    print(Bt)
+    mul_t = At.mul(Bt, 1)
     res = []
-    for row in range(num_types):
-        res.append(set())
-    out = []
-    for i in reader:
-        out.append(i)
-    gr = np.asarray(out)
-    gr = gr.astype(int)
+    for i in obj1:
+        for j in obj1:
+            if mul[i][j] == 0 and mul_t[i][j] == 0:
+                res.append([i, j])
+    return res[:len(res)//2]
 
-    for i in gr:
-        res[0].add(i[0])
-        res[1].add(i[1])
-
-    size = gr.shape[0]
-    for i in range(size):
-        compare_el = gr[i][1]
-        next_node = set()
-        next_node.add(compare_el)
-        while next_node != set():
-            next_node.clear()
-            for j in range(i+1, size):
-                if compare_el == gr[j][0]:
-                    next_node.add(gr[j][1])
-                    res[2].add(gr[i][0])
-                    res[3].add(gr[j][1])
-            if next_node != set():
-                compare_el = next_node.pop()
-    compare_el = 1
-    cur_neighbours = set()
-    cur_neighbours.add(compare_el)
-    checked = set()
-    for i in range(size):
-        if gr[i][0] in checked:
-            continue
-        cur_neighbours = set()
-        compare_el = gr[i][0]
-        next_node = set()
-        next_node.add(compare_el)
-        while next_node != set():
-            next_node.clear()
-            for j in range(i, size):
-                if compare_el == gr[j][0]:
-                    cur_neighbours.add(gr[j][1])
-
-            if next_node != set():
-                compare_el = next_node.pop()
-        if len(cur_neighbours) > 1:
-            for t in cur_neighbours:
-                res[4].add(t)
-        next_node = cur_neighbours
-        cur_neighbours.clear()
-        compare_el = gr[i][1]
-    for i in range(len(res)):
-        res[i] = list(res[i])
-        res[i].sort()
-    return res
 
 
 
