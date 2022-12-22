@@ -1,6 +1,5 @@
 import json
 import numpy as np
-import pandas as pd
 
 def yt(X, kt_1):
     return np.matmul(X, kt_1)
